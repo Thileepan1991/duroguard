@@ -166,7 +166,7 @@ export const ProductCatalogue: React.FC<ProductCatalogueProps> = ({
                       className="px-3 py-1 rounded bg-white hover:bg-amber-400 text-neutral-950 text-xs font-mono font-bold flex items-center gap-1 shadow-lg transition-colors cursor-pointer"
                     >
                       <Sparkles className="w-3 h-3" />
-                      <span>Inspect 3D</span>
+                      <span>Configure in 3D</span>
                     </button>
                   </div>
                 </div>

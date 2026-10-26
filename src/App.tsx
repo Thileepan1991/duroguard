@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { DoorCanvas } from './components/3d/DoorCanvas';
+import { useState } from 'react';
 import { Navbar } from './components/ui/Navbar';
-import { ScrollExperience } from './components/ui/ScrollExperience';
+import { HeroSection } from './components/ui/HeroSection';
+import { StudioSection } from './components/ui/StudioSection';
 import { ProductCatalogue } from './components/ui/ProductCatalogue';
 import { ProductDetailModal } from './components/ui/ProductDetailModal';
 import { SecurityEngineering } from './components/ui/SecurityEngineering';
@@ -34,8 +34,6 @@ export function App() {
 
   // Kinematic & Interactive 3D States
   const [isDoorOpen, setIsDoorOpen] = useState(false);
-  const [openProgress, setOpenProgress] = useState(0);
-  const [explodedProgress, setExplodedProgress] = useState(0);
   const [isLocked, setIsLocked] = useState(true);
   const [hasLedAccent, setHasLedAccent] = useState(true);
   const [hasSmartLock, setHasSmartLock] = useState(true);
@@ -47,53 +45,9 @@ export function App() {
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
   const [isSampleKitOpen, setIsSampleKitOpen] = useState(false);
 
-  // Scroll Tracking
-  const [scrollProgress, setScrollProgress] = useState(0);
-
-  // Scroll Listener
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = totalHeight > 0 ? Math.min(1, Math.max(0, scrollY / totalHeight)) : 0;
-      setScrollProgress(progress);
-
-      // Automated Kinematics based on scroll position (when not manually overridden in orbit mode)
-      if (!isOrbitMode) {
-        // Stage 1: Door swings open as visitor scrolls down from hero
-        if (progress > 0.04 && progress < 0.28) {
-          const doorSwingRatio = Math.min(1, (progress - 0.04) / 0.12);
-          setOpenProgress(doorSwingRatio);
-          setIsDoorOpen(doorSwingRatio > 0.4);
-        } else if (progress <= 0.04) {
-          setOpenProgress(0);
-          setIsDoorOpen(false);
-        }
-
-        // Stage 2: Exploded construction view active in Chapter 2
-        if (progress >= 0.20 && progress <= 0.42) {
-          const explodeRatio = Math.sin(((progress - 0.20) / 0.22) * Math.PI);
-          setExplodedProgress(Math.max(0, explodeRatio));
-        } else {
-          setExplodedProgress(0);
-        }
-
-        // Stage 3: Lock state demonstration
-        if (progress > 0.42 && progress < 0.55) {
-          setIsLocked(true);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isOrbitMode]);
-
   // Handlers
   const handleToggleDoorOpen = () => {
-    const nextState = !isDoorOpen;
-    setIsDoorOpen(nextState);
-    setOpenProgress(nextState ? 1 : 0);
+    setIsDoorOpen(prev => !prev);
   };
 
   const handleToggleLock = () => {
@@ -114,7 +68,7 @@ export function App() {
 
   const handleSelectProduct = (product: DoorProduct) => {
     setSelectedProduct(product);
-    // Find matching default finish
+    // Set matching default finish
     const matchingFinish = FINISH_OPTIONS.find(f => f.id === product.defaultFinish);
     if (matchingFinish) setSelectedFinish(matchingFinish);
 
@@ -128,6 +82,11 @@ export function App() {
     }
   };
 
+  const handleSelectProductForStudio = (product: DoorProduct) => {
+    handleSelectProduct(product);
+    handleScrollToSection('studio');
+  };
+
   const handleScrollToSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
     if (el) {
@@ -137,27 +96,6 @@ export function App() {
 
   return (
     <div className="relative min-h-screen bg-[#07080a] text-neutral-100 selection:bg-amber-400 selection:text-black font-sans antialiased">
-      {/* ================= FIXED 3D WEBGL CANVAS BACKGROUND ================= */}
-      <div className="fixed inset-0 z-0 pointer-events-auto">
-        <DoorCanvas
-          finish={selectedFinish}
-          handle={selectedHandle}
-          scrollProgress={scrollProgress}
-          openProgress={openProgress}
-          explodedProgress={explodedProgress}
-          isLocked={isLocked}
-          hasLedAccent={hasLedAccent}
-          isOrbitMode={isOrbitMode}
-          environmentType={environmentType}
-          doorStyle={selectedStyle}
-          showHotspots={explodedProgress > 0.1 || scrollProgress < 0.5}
-          onToggleOpen={handleToggleDoorOpen}
-        />
-      </div>
-
-      {/* Clean luxury studio backdrop */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/20" />
-
       {/* ================= FIXED NAVBAR ================= */}
       <Navbar
         isOrbitMode={isOrbitMode}
@@ -168,23 +106,40 @@ export function App() {
         onScrollToSection={handleScrollToSection}
       />
 
-      {/* ================= SCROLL EXPERIENCE CONTENT ================= */}
+      {/* ================= MAIN CONTENT FLOW ================= */}
       <main className="relative z-10 w-full">
-        {/* Chapters 1, 2, 3: Hero, Engineering Anatomy, 3D Configurator Studio */}
-        <ScrollExperience
-          scrollProgress={scrollProgress}
-          openProgress={openProgress}
-          explodedProgress={explodedProgress}
+        {/* Section 1: Hero Entrance with Dedicated 3D Stage */}
+        <HeroSection
+          selectedProduct={selectedProduct}
+          selectedFinish={selectedFinish}
+          selectedHandle={selectedHandle}
+          selectedStyle={selectedStyle}
           isDoorOpen={isDoorOpen}
           isLocked={isLocked}
           hasLedAccent={hasLedAccent}
-          hasSmartLock={hasSmartLock}
           isOrbitMode={isOrbitMode}
+          environmentType={environmentType}
+          onToggleDoorOpen={handleToggleDoorOpen}
+          onToggleLock={handleToggleLock}
+          onToggleOrbit={handleToggleOrbit}
+          onSelectFinish={setSelectedFinish}
+          onScrollToSection={handleScrollToSection}
+          onOpenEnquiryModal={() => setIsEnquiryModalOpen(true)}
+        />
+
+        {/* Section 2: Dedicated 3D Bespoke Studio & Engineering Anatomy Lab */}
+        <StudioSection
           selectedProduct={selectedProduct}
           selectedFinish={selectedFinish}
           selectedHandle={selectedHandle}
           selectedDimension={selectedDimension}
           selectedStyle={selectedStyle}
+          isDoorOpen={isDoorOpen}
+          isLocked={isLocked}
+          hasLedAccent={hasLedAccent}
+          hasSmartLock={hasSmartLock}
+          isOrbitMode={isOrbitMode}
+          environmentType={environmentType}
           onToggleDoorOpen={handleToggleDoorOpen}
           onToggleLock={handleToggleLock}
           onToggleLed={handleToggleLed}
@@ -195,18 +150,13 @@ export function App() {
           onSelectHandle={setSelectedHandle}
           onSelectDimension={setSelectedDimension}
           onSelectStyle={setSelectedStyle}
-          onOpenCatalogue={() => handleScrollToSection('catalogue')}
+          onChangeEnvironment={setEnvironmentType}
           onOpenEnquiryModal={() => setIsEnquiryModalOpen(true)}
-          onOpenSampleKit={() => setIsSampleKitOpen(true)}
-          onScrollToSection={handleScrollToSection}
         />
 
-        {/* Chapter 4: Full Systems Product Catalogue (4 Core Categories) */}
+        {/* Section 3: Product Catalogue (4 Core Categories) */}
         <ProductCatalogue
-          onSelectProductFor3D={(prod) => {
-            handleSelectProduct(prod);
-            handleScrollToSection('hero');
-          }}
+          onSelectProductFor3D={handleSelectProductForStudio}
           onOpenProductDetail={(prod) => setSelectedDetailProduct(prod)}
           onOpenEnquiry={(prod) => {
             if (prod) handleSelectProduct(prod);
@@ -214,22 +164,22 @@ export function App() {
           }}
         />
 
-        {/* Chapter 5: Security & Fire-Rated Certified Standards */}
+        {/* Section 4: Security & Fire-Rated Certified European Standards */}
         <SecurityEngineering />
 
-        {/* Chapter 6: Architectural Showcase & In Situ Lighting Switcher */}
+        {/* Section 5: Architectural In Situ Showcase & Environment Switcher */}
         <ArchitecturalShowcase
           currentEnv={environmentType}
           onChangeEnv={setEnvironmentType}
           onOpenEnquiry={() => setIsEnquiryModalOpen(true)}
         />
 
-        {/* Chapter 7: Global Showrooms & Dealer Network */}
+        {/* Section 6: Global Showrooms & Dealer Network */}
         <DealerNetwork
           onOpenConsultation={() => setIsEnquiryModalOpen(true)}
         />
 
-        {/* Footer */}
+        {/* Section 7: Global Footer */}
         <Footer
           onOpenCatalogue={() => handleScrollToSection('catalogue')}
           onOpenEnquiry={() => setIsEnquiryModalOpen(true)}
@@ -244,8 +194,7 @@ export function App() {
         product={selectedDetailProduct}
         onClose={() => setSelectedDetailProduct(null)}
         onLoadIn3D={(prod) => {
-          handleSelectProduct(prod);
-          handleScrollToSection('hero');
+          handleSelectProductForStudio(prod);
         }}
         onOpenEnquiry={(prod) => {
           handleSelectProduct(prod);

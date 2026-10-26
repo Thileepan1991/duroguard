@@ -35,10 +35,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     setIsMuted(muted);
   };
 
-  const navLinks = [
-    { label: 'Engineering', id: 'engineering' },
-    { label: 'Catalogue', action: onOpenCatalogue },
-    { label: 'Configurator', id: 'configurator' },
+  interface NavItem {
+    label: string;
+    id?: string;
+    action?: () => void;
+  }
+
+  const navLinks: NavItem[] = [
+    { label: '3D Studio', id: 'studio' },
+    { label: 'Collections', action: onOpenCatalogue },
     { label: 'Security & Fire', id: 'security' },
     { label: 'Showcase', id: 'showcase' },
     { label: 'Showrooms', id: 'dealers' },
