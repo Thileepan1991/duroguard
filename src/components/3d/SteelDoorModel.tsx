@@ -50,25 +50,25 @@ export const SteelDoorModel: React.FC<SteelDoorModelProps> = ({
       color: new THREE.Color(finish.hex),
       metalness: finish.metalness,
       roughness: finish.roughness,
-      envMapIntensity: 1.4,
+      envMapIntensity: 2.4,
     });
   }, [finish.hex, finish.metalness, finish.roughness]);
 
   const frameMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#15171b'),
-      metalness: 0.7,
-      roughness: 0.45,
-      envMapIntensity: 0.8,
+      color: new THREE.Color('#242932'),
+      metalness: 0.6,
+      roughness: 0.35,
+      envMapIntensity: 1.6,
     });
   }, []);
 
   const stainlessMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#cbd5e1'),
-      metalness: 0.98,
-      roughness: 0.18,
-      envMapIntensity: 1.8,
+      color: new THREE.Color('#e2e8f0'),
+      metalness: 0.95,
+      roughness: 0.15,
+      envMapIntensity: 2.8,
     });
   }, []);
 
@@ -76,8 +76,8 @@ export const SteelDoorModel: React.FC<SteelDoorModelProps> = ({
     return new THREE.MeshStandardMaterial({
       color: new THREE.Color('#fff0d4'),
       emissive: new THREE.Color(hasLedAccent ? '#f59e0b' : '#332211'),
-      emissiveIntensity: hasLedAccent ? 3.0 : 0.2,
-      roughness: 0.3,
+      emissiveIntensity: hasLedAccent ? 4.5 : 0.2,
+      roughness: 0.25,
     });
   }, [hasLedAccent]);
 
@@ -216,7 +216,7 @@ export const SteelDoorModel: React.FC<SteelDoorModelProps> = ({
 
               {/* Edge Stainless Protective Banding */}
               <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[doorWidth + 0.002, doorHeight + 0.002, 0.004]} />
+                <boxGeometry args={[doorWidth + 0.006, doorHeight + 0.006, doorThickness + 0.004]} />
                 <primitive object={stainlessMaterial} attach="material" />
               </mesh>
 

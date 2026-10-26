@@ -1,6 +1,6 @@
 import React, { useRef, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Environment, Lightformer, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { SteelDoorModel } from './SteelDoorModel';
 import { ArchitecturalScene } from './ArchitecturalScene';
@@ -20,11 +20,15 @@ const CameraRig: React.FC<CameraRigProps> = ({
   isOrbitMode,
   selectedHotspot
 }) => {
-  const targetPos = useRef(new THREE.Vector3(0.3, 0.0, 4.2));
-  const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
+  const targetPos = useRef(new THREE.Vector3(-0.45, 0.08, 3.5));
+  const targetLookAt = useRef(new THREE.Vector3(0.3, 0, 0));
 
   useFrame((state, delta) => {
     if (isOrbitMode) return; // OrbitControls handles camera in free mode
+
+    const isDesktop = state.viewport.width > 7.0 || (typeof window !== 'undefined' && window.innerWidth >= 1024);
+    const heroCameraX = isDesktop ? -0.55 : 0;
+    const heroTargetX = isDesktop ? 0.35 : 0;
 
     if (selectedHotspot) {
       // Zoom in towards selected hotspot
@@ -41,37 +45,41 @@ const CameraRig: React.FC<CameraRigProps> = ({
     } else {
       // Cinematic Scroll Waypoints
       if (scrollProgress < 0.2) {
-        // Hero: cinematic approach
+        // Hero: framed clearly in view
         const t = scrollProgress / 0.2;
         targetPos.current.set(
-          THREE.MathUtils.lerp(0.3, 0.1, t),
-          THREE.MathUtils.lerp(0.1, 0.0, t),
-          THREE.MathUtils.lerp(4.4, 3.4, t)
+          THREE.MathUtils.lerp(heroCameraX, heroCameraX * 0.4, t),
+          THREE.MathUtils.lerp(0.08, 0.0, t),
+          THREE.MathUtils.lerp(3.5, 3.0, t)
         );
-        targetLookAt.current.set(0, 0, 0);
+        targetLookAt.current.set(
+          THREE.MathUtils.lerp(heroTargetX, 0.1, t),
+          0,
+          0
+        );
       } else if (scrollProgress < 0.45) {
         // Engineering Anatomy: 3/4 perspective for exploded view
         const t = (scrollProgress - 0.2) / 0.25;
         targetPos.current.set(
-          THREE.MathUtils.lerp(0.1, 1.4, t),
-          THREE.MathUtils.lerp(0.0, 0.3, t),
-          THREE.MathUtils.lerp(3.4, 3.1, t)
+          THREE.MathUtils.lerp(heroCameraX * 0.4, 1.2, t),
+          THREE.MathUtils.lerp(0.0, 0.25, t),
+          THREE.MathUtils.lerp(3.0, 2.9, t)
         );
         targetLookAt.current.set(
-          THREE.MathUtils.lerp(0, 0.2, t),
-          THREE.MathUtils.lerp(0, 0.1, t),
+          THREE.MathUtils.lerp(0.1, 0.15, t),
+          THREE.MathUtils.lerp(0, 0.05, t),
           0
         );
       } else if (scrollProgress < 0.7) {
         // Lock and hardware close-up
         const t = (scrollProgress - 0.45) / 0.25;
         targetPos.current.set(
-          THREE.MathUtils.lerp(1.4, 0.8, t),
-          THREE.MathUtils.lerp(0.3, 0.05, t),
-          THREE.MathUtils.lerp(3.1, 2.0, t)
+          THREE.MathUtils.lerp(1.2, 0.75, t),
+          THREE.MathUtils.lerp(0.25, 0.05, t),
+          THREE.MathUtils.lerp(2.9, 1.9, t)
         );
         targetLookAt.current.set(
-          THREE.MathUtils.lerp(0.2, 0.5, t),
+          THREE.MathUtils.lerp(0.15, 0.48, t),
           0,
           0
         );
@@ -79,12 +87,12 @@ const CameraRig: React.FC<CameraRigProps> = ({
         // Finish Customization / Grand Showcase
         const t = (scrollProgress - 0.7) / 0.3;
         targetPos.current.set(
-          THREE.MathUtils.lerp(0.8, 0.4, t),
-          THREE.MathUtils.lerp(0.05, 0.1, t),
-          THREE.MathUtils.lerp(2.0, 3.6, t)
+          THREE.MathUtils.lerp(0.75, heroCameraX * 0.7, t),
+          THREE.MathUtils.lerp(0.05, 0.08, t),
+          THREE.MathUtils.lerp(1.9, 3.4, t)
         );
         targetLookAt.current.set(
-          THREE.MathUtils.lerp(0.5, 0, t),
+          THREE.MathUtils.lerp(0.48, heroTargetX * 0.8, t),
           0,
           0
         );
@@ -93,8 +101,6 @@ const CameraRig: React.FC<CameraRigProps> = ({
 
     // Smooth dampening
     state.camera.position.lerp(targetPos.current, THREE.MathUtils.clamp(delta * 3.5, 0, 0.2));
-    const currentLook = new THREE.Vector3();
-    state.camera.getWorldDirection(currentLook);
     state.camera.lookAt(targetLookAt.current);
   });
 
@@ -149,42 +155,99 @@ export const DoorCanvas: React.FC<DoorCanvasProps> = ({
           alpha: false,
         }}
         camera={{
-          position: [0.3, 0.1, 4.2],
+          position: [-0.45, 0.08, 3.5],
           fov: 42,
           near: 0.1,
-          far: 25,
+          far: 35,
         }}
         dpr={[1, 2]} // Crisp rendering on high-DPI screens
       >
-        <color attach="background" args={['#080a0d']} />
-        <fog attach="fog" args={['#080a0d', 5, 18]} />
+        <color attach="background" args={['#090c12']} />
 
-        {/* Global Lights */}
-        <ambientLight intensity={0.45} />
+        {/* ================= PROCEDURAL STUDIO ENVIRONMENT ================= */}
+        {/* Generates brilliant HDR specular reflections for brushed metal and steel */}
+        <Environment resolution={512}>
+          {/* Overhead Main Softbox */}
+          <Lightformer
+            form="rect"
+            intensity={3.5}
+            position={[0, 6, -1]}
+            scale={[14, 6, 1]}
+            target={[0, 0, 0]}
+            color="#ffffff"
+          />
+          {/* Right Front Key Light */}
+          <Lightformer
+            form="rect"
+            intensity={4.0}
+            position={[4, 2, 3]}
+            scale={[5, 8, 1]}
+            target={[0, 0, 0]}
+            color="#f8fafc"
+          />
+          {/* Left Rim Cool Metallic Strip */}
+          <Lightformer
+            form="rect"
+            intensity={3.2}
+            position={[-5, 2, -1]}
+            scale={[3, 9, 1]}
+            target={[0, 0, 0]}
+            color="#93c5fd"
+          />
+          {/* Front Specular Glint Strip */}
+          <Lightformer
+            form="rect"
+            intensity={2.5}
+            position={[0, 0, 5]}
+            scale={[8, 3, 1]}
+            target={[0, 0, 0]}
+            color="#ffffff"
+          />
+          {/* Warm Architectural Ground Accent */}
+          <Lightformer
+            form="circle"
+            intensity={1.8}
+            position={[0, -2, 2]}
+            scale={3}
+            target={[0, 0, 0]}
+            color="#f59e0b"
+          />
+        </Environment>
 
-        {/* Key Studio / Sun Light */}
+        {/* Global Ambient Fill */}
+        <ambientLight intensity={0.9} />
+
+        {/* Key Studio Sun/Spot Light */}
         <directionalLight
-          position={[4, 5, 4]}
-          intensity={1.8}
+          position={[4, 6, 5]}
+          intensity={2.6}
           castShadow
           shadow-mapSize-width={1024}
           shadow-mapSize-height={1024}
           shadow-bias={-0.0001}
-          color="#fffaf0"
+          color="#ffffff"
         />
 
         {/* Cool Rim / Glint Light for Brushed Stainless Precision */}
         <directionalLight
-          position={[-4, 3, -2]}
-          intensity={1.2}
-          color="#94a3b8"
+          position={[-4, 4, 2]}
+          intensity={2.0}
+          color="#cbd5e1"
         />
 
-        {/* Architectural Low Fill */}
+        {/* Front Architectural Fill Light - illuminates door surface directly */}
         <directionalLight
-          position={[0, -2, 3]}
-          intensity={0.3}
-          color="#cbd5e1"
+          position={[0, 1.5, 5]}
+          intensity={1.8}
+          color="#f8fafc"
+        />
+
+        {/* Warm Portal Ground Uplight */}
+        <pointLight
+          position={[0, -1.3, 0.6]}
+          intensity={1.4}
+          color="#f59e0b"
+          distance={3.5}
         />
 
         <Suspense fallback={null}>
@@ -204,6 +267,15 @@ export const DoorCanvas: React.FC<DoorCanvasProps> = ({
           <AnnotationHotspots
             visible={showHotspots && !isOrbitMode}
             onSelectHotspot={handleHotspotClick}
+          />
+
+          {/* Contact Shadows grounding the door on the travertine floor */}
+          <ContactShadows
+            position={[0, -1.44, 0]}
+            opacity={0.8}
+            scale={10}
+            blur={1.8}
+            far={2.5}
           />
         </Suspense>
 

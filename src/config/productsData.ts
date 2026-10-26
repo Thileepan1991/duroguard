@@ -67,54 +67,54 @@ export const FINISH_OPTIONS: FinishOption[] = [
   {
     id: 'brushed-stainless',
     name: 'Grade 316 Marine Brushed Stainless',
-    hex: '#c0c7d0',
-    roughness: 0.28,
-    metalness: 0.95,
+    hex: '#d8e2ec',
+    roughness: 0.22,
+    metalness: 0.88,
     description: 'Precision longitudinal hand-brushed grain with anti-fingerprint nano-shield.',
     tag: 'Marine-Grade 316'
   },
   {
     id: 'charcoal-obsidian',
     name: 'Industrial Charcoal Powdercoat',
-    hex: '#1e2126',
-    roughness: 0.45,
-    metalness: 0.82,
+    hex: '#2c333d',
+    roughness: 0.35,
+    metalness: 0.65,
     description: 'Deep architectural graphite micro-texture with high UV weather endurance.',
     tag: 'Architectural Grade'
   },
   {
     id: 'corten-patina',
     name: 'Atmospheric Corten Steel',
-    hex: '#78432b',
-    roughness: 0.72,
-    metalness: 0.55,
+    hex: '#944e32',
+    roughness: 0.62,
+    metalness: 0.45,
     description: 'Natural stabilized oxide patina with organic warm rust undertones.',
     tag: 'Artisan Patina'
   },
   {
     id: 'champagne-bronze',
     name: 'PVD Champagne Bronze Titanium',
-    hex: '#a38965',
-    roughness: 0.25,
-    metalness: 0.92,
+    hex: '#c8a87b',
+    roughness: 0.20,
+    metalness: 0.84,
     description: 'Physical Vapor Deposition titanium coating with rich warm metallic luster.',
     tag: 'PVD Vapor Infused'
   },
   {
     id: 'titanium-silver',
     name: 'Raw Satin Titanium Silver',
-    hex: '#9ba4b0',
-    roughness: 0.22,
-    metalness: 0.96,
+    hex: '#c2ccd8',
+    roughness: 0.18,
+    metalness: 0.90,
     description: 'Ultra-refined bead-blasted satin titanium finish with crisp cold reflections.',
     tag: 'Aerospace Grade'
   },
   {
     id: 'midnight-matte',
     name: 'Jet Obsidian Midnight Black',
-    hex: '#0d0e12',
-    roughness: 0.55,
-    metalness: 0.75,
+    hex: '#181b22',
+    roughness: 0.45,
+    metalness: 0.60,
     description: 'Ultra-low-sheen stealth black architectural coating with deep absorption.',
     tag: 'Monolithic Stealth'
   }

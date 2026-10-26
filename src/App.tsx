@@ -155,8 +155,8 @@ export function App() {
         />
       </div>
 
-      {/* Subtle Atmospheric Vignette & Grid Overlay */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(6,7,9,0.75)_80%)]" />
+      {/* Clean luxury studio backdrop */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
       {/* ================= FIXED NAVBAR ================= */}
       <Navbar

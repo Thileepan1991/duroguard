@@ -18,9 +18,9 @@ export const ArchitecturalScene: React.FC<ArchitecturalSceneProps> = ({
     const isConcrete = environmentType === 'minimalist-concrete';
 
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color(isChalet ? '#1a1816' : isConcrete ? '#242830' : '#14171d'),
-      roughness: 0.35,
-      metalness: 0.15,
+      color: new THREE.Color(isChalet ? '#25211c' : isConcrete ? '#323946' : '#262c36'),
+      roughness: 0.3,
+      metalness: 0.2,
     });
   }, [environmentType]);
 
@@ -29,17 +29,17 @@ export const ArchitecturalScene: React.FC<ArchitecturalSceneProps> = ({
     const isConcrete = environmentType === 'minimalist-concrete';
 
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color(isChalet ? '#25211c' : isConcrete ? '#303642' : '#1c2028'),
-      roughness: 0.75,
-      metalness: 0.05,
+      color: new THREE.Color(isChalet ? '#302a24' : isConcrete ? '#3d4654' : '#2d3340'),
+      roughness: 0.6,
+      metalness: 0.1,
     });
   }, [environmentType]);
 
   const ceilingMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
-      color: new THREE.Color('#16181f'),
-      roughness: 0.8,
-      metalness: 0.1,
+      color: new THREE.Color('#222733'),
+      roughness: 0.7,
+      metalness: 0.15,
     });
   }, []);
 
@@ -66,24 +66,35 @@ export const ArchitecturalScene: React.FC<ArchitecturalSceneProps> = ({
       {/* Recessed Linear Ground Uplight Slot */}
       <mesh position={[0, -1.44, 0.4]}>
         <boxGeometry args={[2.2, 0.01, 0.04]} />
-        <meshBasicMaterial color="#d4a359" />
+        <meshBasicMaterial color="#f59e0b" />
       </mesh>
       <pointLight
         position={[0, -1.4, 0.4]}
         color="#f59e0b"
-        intensity={0.6 * lightingIntensity}
-        distance={2.0}
+        intensity={1.2 * lightingIntensity}
+        distance={2.5}
       />
 
-      {/* 2. Left Architectural Flank Wall */}
-      <mesh position={[-1.6, 0.1, 0]} receiveShadow castShadow>
-        <boxGeometry args={[1.6, 3.2, 0.8]} />
+      {/* Architectural Halo Reveal Frame behind the door */}
+      <mesh position={[0, 0, -0.08]}>
+        <boxGeometry args={[1.62, 3.02, 0.04]} />
+        <meshStandardMaterial
+          color="#f59e0b"
+          emissive="#f59e0b"
+          emissiveIntensity={0.8 * lightingIntensity}
+          roughness={0.4}
+        />
+      </mesh>
+
+      {/* 2. Left Architectural Flank Wall - Recessed slightly */}
+      <mesh position={[-1.8, 0.1, -0.15]} receiveShadow castShadow>
+        <boxGeometry args={[1.8, 3.2, 0.45]} />
         <primitive object={wallMaterial} attach="material" />
       </mesh>
 
-      {/* 3. Right Architectural Flank Wall */}
-      <mesh position={[1.6, 0.1, 0]} receiveShadow castShadow>
-        <boxGeometry args={[1.6, 3.2, 0.8]} />
+      {/* 3. Right Architectural Flank Wall - Recessed slightly */}
+      <mesh position={[1.8, 0.1, -0.15]} receiveShadow castShadow>
+        <boxGeometry args={[1.8, 3.2, 0.45]} />
         <primitive object={wallMaterial} attach="material" />
       </mesh>
 
@@ -92,6 +103,17 @@ export const ArchitecturalScene: React.FC<ArchitecturalSceneProps> = ({
         <boxGeometry args={[4.8, 0.35, 1.8]} />
         <primitive object={ceilingMaterial} attach="material" />
       </mesh>
+
+      {/* Direct Key Spot Light on Door Leaf */}
+      <spotLight
+        position={[0, 3.2, 3.2]}
+        target-position={[0, 0, 0]}
+        angle={0.65}
+        penumbra={0.7}
+        intensity={2.8 * lightingIntensity}
+        color="#fffaf0"
+        castShadow
+      />
 
       {/* Recessed Downlight Fixtures in Ceiling Soffit */}
       {[-0.8, 0, 0.8].map((x, idx) => (

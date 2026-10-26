@@ -89,78 +89,132 @@ export const ScrollExperience: React.FC<ScrollExperienceProps> = ({
         {/* Top Spacer for Navbar */}
         <div className="h-20" />
 
-        {/* Hero Narrative Overlay */}
-        <div className="max-w-2xl text-left pointer-events-auto space-y-5 animate-in fade-in duration-700">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/80 border border-neutral-700/60 backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-xs font-mono tracking-widest uppercase text-amber-300">
-              Monumental Architectural Portals
-            </span>
+        {/* Hero Narrative Overlay & 3D Interactive Badge */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
+          {/* Left Column: Headline, Specs & Actions */}
+          <div className="lg:col-span-7 max-w-xl text-left pointer-events-auto space-y-5 animate-in fade-in duration-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-900/80 border border-neutral-700/60 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span className="text-xs font-mono tracking-widest uppercase text-amber-300">
+                Monumental Architectural Portals
+              </span>
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-extrabold text-white tracking-tight uppercase leading-[1.05]">
+              Steel & Stainless <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 via-neutral-400 to-amber-200">
+                Mastery
+              </span>
+            </h1>
+
+            <p className="text-sm sm:text-base text-neutral-300 max-w-xl font-sans leading-relaxed">
+              Monumental pivot doors for luxury villas and houses, marine-grade 316 stainless steel, and certified RC4/RC5 high-security fire barriers. Designed with silver & charcoal industrial elegance.
+            </p>
+
+            {/* Quick Interaction Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                onClick={() => {
+                  soundFX.playDoorSwing();
+                  onToggleDoorOpen();
+                }}
+                className="px-6 py-3 rounded-sm bg-neutral-100 hover:bg-white text-neutral-950 font-bold uppercase text-xs font-mono tracking-wider shadow-2xl transition-all transform hover:scale-[1.02] cursor-pointer flex items-center gap-2"
+              >
+                <span>{isDoorOpen ? 'Close Entrance Portal' : 'Open Entrance Portal'}</span>
+                <span className="text-[10px] text-neutral-500 font-mono">(Kinematics)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundFX.playTactileClick();
+                  onToggleOrbit();
+                }}
+                className="px-5 py-3 rounded-sm bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 text-xs font-mono uppercase tracking-wider backdrop-blur-md transition-all cursor-pointer flex items-center gap-2"
+              >
+                <RotateCw className="w-3.5 h-3.5 text-amber-400" />
+                <span>{isOrbitMode ? 'Exit Orbit Mode' : 'Free 3D Orbit'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  soundFX.playTactileClick();
+                  onOpenCatalogue();
+                }}
+                className="px-5 py-3 rounded-sm bg-neutral-900/60 hover:bg-neutral-800 text-amber-300 border border-amber-500/30 text-xs font-mono uppercase tracking-wider backdrop-blur-md transition-all cursor-pointer"
+              >
+                Catalogue (4 Categories)
+              </button>
+            </div>
+
+            {/* Live Engineering Telemetry */}
+            <div className="pt-4 grid grid-cols-4 gap-2 max-w-lg text-[10px] sm:text-xs font-mono text-neutral-400 border-t border-neutral-800/80">
+              <div>
+                <span className="text-neutral-500 block">SPINDLE:</span>
+                <span className="text-white font-bold">800 KG</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 block">AXIS:</span>
+                <span className="text-white font-bold">+180 MM</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 block">SWING:</span>
+                <span className="text-amber-300 font-bold">{(openProgress * 78).toFixed(0)}°</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 block">SECURITY:</span>
+                <span className="text-amber-400 font-bold">RC4</span>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-extrabold text-white tracking-tight uppercase leading-[1.05]">
-            Steel & Stainless <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 via-neutral-400 to-amber-200">
-              Mastery
-            </span>
-          </h1>
+          {/* Right Column: Floating Interactive 3D Model HUD */}
+          <div className="lg:col-span-5 hidden lg:flex flex-col items-end pointer-events-auto">
+            <div className="p-4 rounded-xl bg-neutral-950/70 border border-neutral-800/80 backdrop-blur-xl shadow-2xl space-y-3 max-w-xs text-left animate-in fade-in duration-1000">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Interactive 3D Portal</span>
+                </span>
+                <span className="text-[10px] font-mono text-neutral-400">WebGL 2.0</span>
+              </div>
 
-          <p className="text-sm sm:text-base text-neutral-300 max-w-xl font-sans leading-relaxed">
-            Monumental pivot doors for luxury villas and houses, marine-grade 316 stainless steel, and certified RC4/RC5 high-security fire barriers. Designed with silver & charcoal industrial elegance.
-          </p>
+              <p className="text-xs text-neutral-300 font-sans leading-relaxed">
+                Rendered with physical brushed metallic shaders, warm architectural downlights, and genuine offset pivot kinematics.
+              </p>
 
-          {/* Quick Interaction Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button
-              onClick={() => {
-                soundFX.playDoorSwing();
-                onToggleDoorOpen();
-              }}
-              className="px-6 py-3 rounded-sm bg-neutral-100 hover:bg-white text-neutral-950 font-bold uppercase text-xs font-mono tracking-wider shadow-2xl transition-all transform hover:scale-[1.02] cursor-pointer flex items-center gap-2"
-            >
-              <span>{isDoorOpen ? 'Close Entrance Portal' : 'Open Entrance Portal'}</span>
-              <span className="text-[10px] text-neutral-500 font-mono">(Kinematics)</span>
-            </button>
+              <div className="pt-2 border-t border-neutral-800/80 space-y-1.5 text-xs font-mono">
+                <button
+                  onClick={() => {
+                    soundFX.playDoorSwing();
+                    onToggleDoorOpen();
+                  }}
+                  className="w-full py-2 px-3 rounded bg-neutral-900 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 flex items-center justify-between cursor-pointer transition-colors"
+                >
+                  <span>Door Kinematics:</span>
+                  <span className={`font-bold ${isDoorOpen ? 'text-amber-300' : 'text-neutral-400'}`}>
+                    {isDoorOpen ? 'OPEN (78°)' : 'CLOSED (0°)'}
+                  </span>
+                </button>
 
-            <button
-              onClick={() => {
-                soundFX.playTactileClick();
-                onToggleOrbit();
-              }}
-              className="px-5 py-3 rounded-sm bg-neutral-900/80 hover:bg-neutral-800 text-neutral-200 border border-neutral-700 text-xs font-mono uppercase tracking-wider backdrop-blur-md transition-all cursor-pointer flex items-center gap-2"
-            >
-              <RotateCw className="w-3.5 h-3.5 text-amber-400" />
-              <span>{isOrbitMode ? 'Exit Orbit Mode' : 'Free 3D Orbit'}</span>
-            </button>
+                <button
+                  onClick={() => {
+                    soundFX.playTactileClick();
+                    onToggleOrbit();
+                  }}
+                  className={`w-full py-2 px-3 rounded flex items-center justify-between cursor-pointer transition-all ${
+                    isOrbitMode
+                      ? 'bg-amber-400 text-neutral-950 font-bold'
+                      : 'bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-neutral-800'
+                  }`}
+                >
+                  <span>360° Free Orbit:</span>
+                  <span>{isOrbitMode ? 'ACTIVE' : 'START'}</span>
+                </button>
+              </div>
 
-            <button
-              onClick={() => {
-                soundFX.playTactileClick();
-                onOpenCatalogue();
-              }}
-              className="px-5 py-3 rounded-sm bg-neutral-900/60 hover:bg-neutral-800 text-amber-300 border border-amber-500/30 text-xs font-mono uppercase tracking-wider backdrop-blur-md transition-all cursor-pointer"
-            >
-              Catalogue (4 Categories)
-            </button>
-          </div>
-
-          {/* Live Engineering Telemetry */}
-          <div className="pt-4 grid grid-cols-4 gap-2 max-w-lg text-[10px] sm:text-xs font-mono text-neutral-400 border-t border-neutral-800/80">
-            <div>
-              <span className="text-neutral-500 block">SPINDLE:</span>
-              <span className="text-white font-bold">800 KG</span>
-            </div>
-            <div>
-              <span className="text-neutral-500 block">AXIS:</span>
-              <span className="text-white font-bold">+180 MM</span>
-            </div>
-            <div>
-              <span className="text-neutral-500 block">SWING:</span>
-              <span className="text-amber-300 font-bold">{(openProgress * 78).toFixed(0)}°</span>
-            </div>
-            <div>
-              <span className="text-neutral-500 block">SECURITY:</span>
-              <span className="text-amber-400 font-bold">RC4</span>
+              <div className="text-[10px] font-mono text-neutral-400 pt-1 flex items-center gap-1.5">
+                <span>💡 Click on the door leaf to open / close</span>
+              </div>
             </div>
           </div>
         </div>
